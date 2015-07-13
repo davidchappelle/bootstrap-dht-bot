@@ -15,15 +15,10 @@ void usage()
 	exit(1);
 }
 
-
 void dispatch_libtorrent_alert(std::shared_ptr<session> s, std::auto_ptr<libtorrent::alert> libtorrent_alert)
 {
-    std::cerr << "libtorrent alert: " << libtorrent_alert->message() << std::endl;
-    switch (libtorrent_alert->type()) {
-        case libtorrent::dht_bootstrap_alert::alert_type:
-            std::cerr << "bootstrapping successful" << std::endl;
-            break;
-    }
+    std::cerr << "libtorrent alert " << (int)libtorrent_alert->type() << ": "
+            << libtorrent_alert->message() << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -50,11 +45,12 @@ int main(int argc, char* argv[])
     libtorrent::fingerprint fp("LT", LIBTORRENT_VERSION_MAJOR, LIBTORRENT_VERSION_MINOR, 0, 0);
     std::shared_ptr<libtorrent::session> session = std::make_shared<libtorrent::session>(
             fp, std::make_pair(session_port, session_port + 8), "0.0.0.0", flags,
-            libtorrent::alert::port_mapping_notification |
+            libtorrent::alert::all_categories |
             libtorrent::alert::debug_notification |
             libtorrent::alert::dht_notification |
             libtorrent::alert::error_notification |
-            libtorrent::alert::status_notification);
+            libtorrent::alert::status_notification |
+            libtorrent::alert::tracker_notification);
 
     session->set_alert_dispatch(std::bind(&dispatch_libtorrent_alert, session, std::placeholders::_1));
     session->add_dht_router(std::make_pair(server_host, server_port));
@@ -64,8 +60,6 @@ int main(int argc, char* argv[])
     std::mutex forever;
     forever.lock();
     forever.lock();
-
-    std::cerr << "stopping bot" << std::endl;
 
     return 0;
 }
