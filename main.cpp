@@ -1,13 +1,11 @@
-#include "libtorrent/session.hpp"
-#include "libtorrent/alert_types.hpp"
-
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
+#include <libtorrent/alert_types.hpp>
+#include <libtorrent/session.hpp>
+#include <libtorrent/session_settings.hpp>
 #include <memory>
 #include <mutex>
 #include <stdlib.h>
-
-using namespace libtorrent;
 
 void usage()
 {
@@ -15,10 +13,11 @@ void usage()
 	exit(1);
 }
 
-void dispatch_libtorrent_alert(std::shared_ptr<session> s, std::auto_ptr<libtorrent::alert> libtorrent_alert)
+void dispatch_libtorrent_alert(
+        std::shared_ptr<libtorrent::session> s,
+        std::auto_ptr<libtorrent::alert> libtorrent_alert)
 {
-    std::cerr << "libtorrent alert " << (int)libtorrent_alert->type() << ": "
-            << libtorrent_alert->message() << std::endl;
+    std::cerr << "libtorrent alert: " << libtorrent_alert->message() << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -54,6 +53,14 @@ int main(int argc, char* argv[])
 
     session->set_alert_dispatch(std::bind(&dispatch_libtorrent_alert, session, std::placeholders::_1));
     session->add_dht_router(std::make_pair(server_host, server_port));
+
+    // Allow interacting with class A networks. This is to deal with the case where
+    // the bootstrap router and/or bots are running in a class A networki that is
+    // no longer considered to be dark/private.
+    libtorrent::dht_settings dht_settings;
+    dht_settings.ignore_dark_internet = false;
+    session->set_dht_settings(dht_settings);
+
     session->start_dht();
 
     // Just block here and let the session run forever.
