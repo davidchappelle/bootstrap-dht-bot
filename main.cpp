@@ -54,11 +54,17 @@ int main(int argc, char* argv[])
     session->set_alert_dispatch(std::bind(&dispatch_libtorrent_alert, session, std::placeholders::_1));
     session->add_dht_router(std::make_pair(server_host, server_port));
 
+    // Cusomized dht settings.
+    libtorrent::dht_settings dht_settings;
+
     // Allow interacting with class A networks. This is to deal with the case where
     // the bootstrap router and/or bots are running in a class A networki that is
     // no longer considered to be dark/private.
-    libtorrent::dht_settings dht_settings;
     dht_settings.ignore_dark_internet = false;
+
+    // Allow multiple bots on the same host to co-exist in the routing table buckets.
+    dht_settings.restrict_routing_ips = false;
+
     session->set_dht_settings(dht_settings);
 
     session->start_dht();
