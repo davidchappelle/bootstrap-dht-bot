@@ -68,6 +68,9 @@ int main(int argc, char* argv[])
     // Allow multiple bots on the same network to be considered as search candidates.
     dht_settings.restrict_search_ips = false;
 
+    // Ignore nodes whose IDs are not correctly generated based on its external IP.
+    dht_settings.enforce_node_id = true;
+
     session->set_dht_settings(dht_settings);
 
     session->start_dht();
