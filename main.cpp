@@ -65,6 +65,9 @@ int main(int argc, char* argv[])
     // Allow multiple bots on the same host to co-exist in the routing table buckets.
     dht_settings.restrict_routing_ips = false;
 
+    // Allow multiple bots on the same network to be considered as search candidates.
+    dht_settings.restrict_search_ips = false;
+
     session->set_dht_settings(dht_settings);
 
     session->start_dht();
