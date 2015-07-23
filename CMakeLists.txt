@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Werror -Wno-deprecated-declarations -DBOOST_ASIO_DYN_LINK ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Werror -Wno-deprecated-declarations ${CMAKE_CXX_FLAGS}")
 
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(LibTorrentRasterbar REQUIRED)
